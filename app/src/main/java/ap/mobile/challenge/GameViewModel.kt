@@ -115,10 +115,10 @@ class GameViewModel : ViewModel() {
 
   fun getButtonText(): String {
     return when (_gameState.value) {
-      GameState.IDLE -> "🎰 PLAY"
-      GameState.ROLLING -> "Rolling..."
-      GameState.SLOT3_STOPPED -> "Play Again"
-      else -> "PLAY"
+      GameState.IDLE -> "SPIN NOW"
+      GameState.ROLLING -> "SPINNING..."
+      GameState.SLOT3_STOPPED -> "SPIN AGAIN"
+      else -> "SPIN"
     }
   }
 

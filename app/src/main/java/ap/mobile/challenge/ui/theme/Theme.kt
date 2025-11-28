@@ -22,11 +22,12 @@ private val DarkColorScheme = darkColorScheme(
   tertiary = NeonBlue,
   background = DarkBg,
   surface = DarkSurface,
-  onPrimary = Color(0xFFFFFFFF),
-  onSecondary = Color(0xFFFFFFFF),
-  onTertiary = Color(0xFFFFFFFF),
-  onBackground = Color(0xFFE0E0E0),
-  onSurface = Color(0xFFE0E0E0)
+  surfaceVariant = DarkCard,
+  onPrimary = Color(0xFF000000),
+  onSecondary = Color(0xFF000000),
+  onTertiary = Color(0xFF000000),
+  onBackground = Color(0xFFE8FFF3),
+  onSurface = Color(0xFFD1FAE5)
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -35,11 +36,12 @@ private val LightColorScheme = lightColorScheme(
   tertiary = SoftBlue,
   background = LightBg,
   surface = LightSurface,
-  onPrimary = Color(0xFF000000),
-  onSecondary = Color(0xFF000000),
-  onTertiary = Color(0xFF000000),
-  onBackground = Color(0xFF1C1B1F),
-  onSurface = Color(0xFF1C1B1F)
+  surfaceVariant = LightCard,
+  onPrimary = Color(0xFFFFFFFF),
+  onSecondary = Color(0xFFFFFFFF),
+  onTertiary = Color(0xFFFFFFFF),
+  onBackground = Color(0xFF0F1F16),
+  onSurface = Color(0xFF1A2F23)
 )
 
 @Composable
