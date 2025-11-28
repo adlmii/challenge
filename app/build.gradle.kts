@@ -53,6 +53,8 @@ dependencies {
   implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
   implementation("androidx.compose.material3:material3-android:1.4.0")
   implementation("androidx.compose.material:material-icons-extended:1.4.0")
+  implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+  implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
