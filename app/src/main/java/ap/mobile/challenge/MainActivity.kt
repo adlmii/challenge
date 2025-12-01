@@ -6,13 +6,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -21,7 +20,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ap.mobile.challenge.ui.components.*
 import ap.mobile.challenge.ui.theme.ChallengeTheme
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,16 +56,7 @@ fun GameScreen(vm: GameViewModel) {
 
   // ========== UI State ==========
   val listState = rememberLazyListState()
-  val coroutineScope = rememberCoroutineScope()
-
-  // ========== Auto Scroll Effect ==========
-  LaunchedEffect(histories.size) {
-    if (histories.isNotEmpty()) {
-      coroutineScope.launch {
-        listState.animateScrollToItem(histories.size - 1)
-      }
-    }
-  }
+  var isHistoryExpanded by remember { mutableStateOf(false) }
 
   // ========== Delete Dialog ==========
   if (showDeleteDialog) {
@@ -77,7 +66,7 @@ fun GameScreen(vm: GameViewModel) {
     )
   }
 
-  // ========== Main Layout ==========
+// ========== Main Layout ==========
   Box(
     modifier = Modifier
       .fillMaxSize()
@@ -90,44 +79,53 @@ fun GameScreen(vm: GameViewModel) {
         )
       )
   ) {
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 20.dp, vertical = 16.dp),
-      horizontalAlignment = Alignment.CenterHorizontally
+
+    LazyColumn(
+      state = listState,
+      modifier = Modifier.fillMaxSize(),
+      contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp)
     ) {
-      Spacer(Modifier.height(40.dp))
 
-      // ========== Header ==========
-      GameHeader()
+      // Item 1: Spacer Atas
+      item { Spacer(Modifier.height(40.dp)) }
 
-      // ========== Slot Machine ==========
-      SlotMachineCard(
-        slot1 = slot1,
-        slot2 = slot2,
-        slot3 = slot3,
-        gameState = gameState
-      )
+      // Item 2: Header
+      item {
+        GameHeader()
+        Spacer(Modifier.height(24.dp))
+      }
 
-      Spacer(Modifier.height(28.dp))
+      // Item 3: Slot Machine
+      item {
+        SlotMachineCard(
+          slot1 = slot1,
+          slot2 = slot2,
+          slot3 = slot3,
+          gameState = gameState
+        )
+        Spacer(Modifier.height(28.dp))
+      }
 
-      // ========== Action Button ==========
-      ActionButton(
-        text = vm.getButtonText(),
-        onClick = { vm.onButtonClick() }
-      )
+      // Item 4: Tombol Action
+      item {
+        ActionButton(
+          text = vm.getButtonText(),
+          onClick = { vm.onButtonClick() }
+        )
+        Spacer(Modifier.height(32.dp))
+      }
 
-      Spacer(Modifier.height(32.dp))
-
-      // ========== History Section ==========
+      // Item 5: Bagian History
       HistorySection(
         histories = histories,
-        listState = listState,
+        isExpanded = isHistoryExpanded, // Pass state
+        onToggle = { isHistoryExpanded = !isHistoryExpanded },
         onRefresh = { vm.loadHistory() },
         onDeleteItem = { vm.showDeleteConfirmation(it) }
       )
 
-      Spacer(Modifier.height(16.dp))
+      // Item 6: Spacer Bawah agar tidak mentok
+      item { Spacer(Modifier.height(16.dp)) }
     }
   }
 }
