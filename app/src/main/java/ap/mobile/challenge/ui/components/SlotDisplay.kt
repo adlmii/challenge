@@ -14,7 +14,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -65,10 +64,6 @@ fun SlotDisplay(
         Box(
             modifier = Modifier
                 .size(90.dp)
-                .shadow(
-                    elevation = if (isStopped && !isRolling) 12.dp else 4.dp,
-                    shape = RoundedCornerShape(20.dp)
-                )
                 .clip(RoundedCornerShape(20.dp))
                 .background(
                     if (isStopped && !isRolling)

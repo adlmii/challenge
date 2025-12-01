@@ -159,13 +159,11 @@ fun ChallengeTheme(
   if (!view.isInEditMode) {
     SideEffect {
       val window = (view.context as Activity).window
-      // Use dark background for status bar to match app
-      window.statusBarColor = if (darkTheme) {
+      window.statusBarColor = if (darkTheme) { // <-- Baris yang tidak digunakan
         DarkBackground.toArgb()
       } else {
         LightBackground.toArgb()
       }
-      // Light status bar icons for dark theme, dark icons for light theme
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
     }
   }

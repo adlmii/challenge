@@ -1,5 +1,6 @@
 package ap.mobile.challenge.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -103,8 +104,9 @@ private fun HistorySectionHeader(
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = MaterialTheme.colorScheme.primary
             ),
-            border = ButtonDefaults.outlinedButtonBorder.copy(
-                width = 1.5.dp
+            border = BorderStroke(
+                width = 1.5.dp,
+                color = MaterialTheme.colorScheme.primary
             ),
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         ) {

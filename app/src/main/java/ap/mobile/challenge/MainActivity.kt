@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -140,11 +141,7 @@ private fun ActionButton(
     onClick = onClick,
     modifier = Modifier
       .fillMaxWidth()
-      .height(64.dp)
-      .shadow(
-        elevation = 16.dp,
-        shape = RoundedCornerShape(32.dp)
-      ),
+      .height(64.dp),
     shape = RoundedCornerShape(32.dp),
     colors = ButtonDefaults.buttonColors(
       containerColor = MaterialTheme.colorScheme.primary
@@ -155,7 +152,7 @@ private fun ActionButton(
       fontSize = 20.sp,
       fontWeight = FontWeight.Black,
       letterSpacing = 2.sp,
-      color = MaterialTheme.colorScheme.onPrimary
+      color = Color.White
     )
   }
 }

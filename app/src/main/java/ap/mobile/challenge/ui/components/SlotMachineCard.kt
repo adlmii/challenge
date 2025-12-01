@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,13 +27,7 @@ fun SlotMachineCard(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 24.dp,
-                shape = RoundedCornerShape(32.dp),
-                ambientColor = MaterialTheme.colorScheme.primary,
-                spotColor = MaterialTheme.colorScheme.primary
-            ),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(32.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -55,27 +48,42 @@ fun SlotMachineCard(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // SLOT 1
                 SlotDisplay(
                     value = slot1,
+                    // Hanya rolling saat state benar-benar ROLLING
                     isRolling = gameState == GameState.ROLLING,
-                    isStopped = gameState != GameState.ROLLING,
+                    // Hanya stopped jika sudah melewati fase rolling-nya (SLOT1_STOPPED ke atas)
+                    isStopped = gameState == GameState.SLOT1_STOPPED ||
+                            gameState == GameState.SLOT2_STOPPED ||
+                            gameState == GameState.SLOT3_STOPPED,
                     slotNumber = 1
                 )
 
                 VerticalDivider()
 
+                // SLOT 2
                 SlotDisplay(
                     value = slot2,
-                    isRolling = gameState == GameState.ROLLING || gameState == GameState.SLOT1_STOPPED,
-                    isStopped = gameState != GameState.ROLLING && gameState != GameState.SLOT1_STOPPED,
+                    // Rolling saat global rolling ATAU saat slot 1 sudah berhenti (menunggu slot 2)
+                    isRolling = gameState == GameState.ROLLING ||
+                            gameState == GameState.SLOT1_STOPPED,
+                    // Hanya stopped jika sudah melewati fase rolling-nya (SLOT2_STOPPED ke atas)
+                    isStopped = gameState == GameState.SLOT2_STOPPED ||
+                            gameState == GameState.SLOT3_STOPPED,
                     slotNumber = 2
                 )
 
                 VerticalDivider()
 
+                // SLOT 3
                 SlotDisplay(
                     value = slot3,
-                    isRolling = gameState != GameState.SLOT3_STOPPED,
+                    // Rolling selama belum sampai tahap akhir (SLOT3_STOPPED) dan bukan IDLE
+                    isRolling = gameState == GameState.ROLLING ||
+                            gameState == GameState.SLOT1_STOPPED ||
+                            gameState == GameState.SLOT2_STOPPED,
+                    // Hanya stopped saat permainan selesai
                     isStopped = gameState == GameState.SLOT3_STOPPED,
                     slotNumber = 3
                 )
@@ -131,11 +139,7 @@ private fun VerticalDivider() {
 private fun ResultCard(isWin: Boolean) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 12.dp,
-                shape = RoundedCornerShape(20.dp)
-            ),
+            .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = if (isWin)
                 WinGreen.copy(alpha = 0.15f)
