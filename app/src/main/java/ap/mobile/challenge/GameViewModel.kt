@@ -6,7 +6,7 @@ import ap.mobile.challenge.api.History
 import ap.mobile.challenge.api.RetrofitClient
 import ap.mobile.challenge.utils.GameState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job // Import Job
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,16 +28,19 @@ class GameViewModel : ViewModel() {
   private val _slot3 = MutableStateFlow(3)
   val slot3: StateFlow<Int> = _slot3.asStateFlow()
 
-  // ========== Game State ==========
+  // ========== Game State & Jobs ==========
   private val _gameState = MutableStateFlow(GameState.IDLE)
   val gameState: StateFlow<GameState> = _gameState.asStateFlow()
 
-  // Variabel Job untuk mengontrol setiap slot
   private var job1: Job? = null
   private var job2: Job? = null
   private var job3: Job? = null
 
   private var isRolling = false
+
+  // ========== CHEAT VARIABLES ==========
+  private var pullCount = 0
+  private var isCheatActive = false
 
   // ========== History State ==========
   private val _histories = MutableStateFlow<List<History>>(listOf())
@@ -54,10 +57,17 @@ class GameViewModel : ViewModel() {
   private val _isLoading = MutableStateFlow(false)
   val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+  // ========== Public Methods ==========
+
+  fun onButtonLongClick() {
+    if (_gameState.value == GameState.IDLE && pullCount >= 10) {
+      startRolling(activeCheat = true)
+    }
+  }
 
   fun onButtonClick() {
     when (_gameState.value) {
-      GameState.IDLE -> startRolling()
+      GameState.IDLE -> startRolling(activeCheat = false)
       GameState.ROLLING -> stopSlot1()
       GameState.SLOT1_STOPPED -> stopSlot2()
       GameState.SLOT2_STOPPED -> stopSlot3()
@@ -86,6 +96,7 @@ class GameViewModel : ViewModel() {
           ) {
             if (response.isSuccessful) {
               val rawData = response.body() ?: listOf()
+              // SORTING: ID terbesar (terbaru) di paling atas
               _histories.value = rawData.sortedByDescending { it.id }
             }
             _isLoading.value = false
@@ -119,12 +130,14 @@ class GameViewModel : ViewModel() {
     dismissDeleteDialog()
   }
 
+  // ========== Private Methods ==========
 
-  private fun startRolling() {
+  private fun startRolling(activeCheat: Boolean) {
     _gameState.value = GameState.ROLLING
     isRolling = true
+    isCheatActive = activeCheat
 
-    // Roll slot 1
+    // Simpan Job agar bisa di-cancel paksa
     job1 = viewModelScope.launch(Dispatchers.Default) {
       while (isRolling) {
         _slot1.value = animateSlot(_slot1.value)
@@ -132,7 +145,6 @@ class GameViewModel : ViewModel() {
       }
     }
 
-    // Roll slot 2
     job2 = viewModelScope.launch(Dispatchers.Default) {
       while (isRolling) {
         _slot2.value = animateSlot(_slot2.value)
@@ -140,7 +152,6 @@ class GameViewModel : ViewModel() {
       }
     }
 
-    // Roll slot 3
     job3 = viewModelScope.launch(Dispatchers.Default) {
       while (isRolling) {
         _slot3.value = animateSlot(_slot3.value)
@@ -150,12 +161,22 @@ class GameViewModel : ViewModel() {
   }
 
   private fun stopSlot1() {
-    job1?.cancel()
+    job1?.cancel() // Paksa berhenti animasi
+
+    if (isCheatActive) {
+      _slot1.value = 7
+    }
+
     _gameState.value = GameState.SLOT1_STOPPED
   }
 
   private fun stopSlot2() {
     job2?.cancel()
+
+    if (isCheatActive) {
+      _slot2.value = 7
+    }
+
     _gameState.value = GameState.SLOT2_STOPPED
   }
 
@@ -165,7 +186,14 @@ class GameViewModel : ViewModel() {
     isRolling = false
     _gameState.value = GameState.SLOT3_STOPPED
 
+    if (isCheatActive) {
+      _slot3.value = 7
+    }
 
+    // Tambah counter main
+    pullCount++
+
+    // Data dijamin sinkron karena animasi sudah dimatikan via job.cancel()
     val isWin = (_slot1.value == _slot2.value && _slot2.value == _slot3.value)
     val history = History(
       slot1 = _slot1.value,
@@ -174,6 +202,9 @@ class GameViewModel : ViewModel() {
       status = isWin
     )
     insert(history)
+
+    // Reset cheat flag
+    isCheatActive = false
   }
 
   private fun resetGame() {
@@ -196,12 +227,7 @@ class GameViewModel : ViewModel() {
               loadHistory()
             }
           }
-
-          override fun onFailure(
-            call: Call<Void>,
-            t: Throwable
-          ) {
-          }
+          override fun onFailure(call: Call<Void>, t: Throwable) {}
         }
       )
     }
@@ -219,12 +245,7 @@ class GameViewModel : ViewModel() {
               loadHistory()
             }
           }
-
-          override fun onFailure(
-            call: Call<Void>,
-            t: Throwable
-          ) {
-          }
+          override fun onFailure(call: Call<Void>, t: Throwable) {}
         }
       )
     }

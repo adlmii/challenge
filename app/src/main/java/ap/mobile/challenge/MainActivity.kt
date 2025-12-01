@@ -4,23 +4,27 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ap.mobile.challenge.ui.components.*
 import ap.mobile.challenge.ui.theme.ChallengeTheme
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -59,6 +63,8 @@ fun GameScreen(vm: GameViewModel) {
   // ========== UI State ==========
   val listState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
+
+  // State untuk Collapsible History
   var isHistoryExpanded by remember { mutableStateOf(false) }
 
   // ========== Delete Dialog ==========
@@ -69,7 +75,7 @@ fun GameScreen(vm: GameViewModel) {
     )
   }
 
-// ========== Main Layout ==========
+  // ========== Main Layout ==========
   Box(
     modifier = Modifier
       .fillMaxSize()
@@ -92,13 +98,13 @@ fun GameScreen(vm: GameViewModel) {
       // Item 1: Spacer Atas
       item { Spacer(Modifier.height(40.dp)) }
 
-      // Item 2: Header
+      // Item 2: Header Game
       item {
         GameHeader()
         Spacer(Modifier.height(24.dp))
       }
 
-      // Item 3: Slot Machine
+      // Item 3: Slot Machine Card
       item {
         SlotMachineCard(
           slot1 = slot1,
@@ -109,11 +115,12 @@ fun GameScreen(vm: GameViewModel) {
         Spacer(Modifier.height(28.dp))
       }
 
-      // Item 4: Tombol Action
+      // Item 4:
       item {
         ActionButton(
           text = vm.getButtonText(),
-          onClick = { vm.onButtonClick() }
+          onClick = { vm.onButtonClick() },
+          onLongClick = { vm.onButtonLongClick() }
         )
         Spacer(Modifier.height(32.dp))
       }
@@ -133,33 +140,47 @@ fun GameScreen(vm: GameViewModel) {
         onDeleteItem = { vm.showDeleteConfirmation(it) }
       )
 
-      // Item 6: Spacer Bawah agar tidak mentok
+      // Item 6: Spacer Bawah
       item { Spacer(Modifier.height(16.dp)) }
     }
   }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ActionButton(
   text: String,
-  onClick: () -> Unit
+  onClick: () -> Unit,
+  onLongClick: () -> Unit
 ) {
-  Button(
-    onClick = onClick,
+  val haptics = LocalHapticFeedback.current
+
+  // Menggunakan Surface + combinedClickable untuk support Long Click
+  Surface(
     modifier = Modifier
       .fillMaxWidth()
-      .height(64.dp),
+      .height(64.dp)
+      .clip(RoundedCornerShape(32.dp))
+      .combinedClickable(
+        onClick = onClick,
+        onLongClick = {
+          haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+          onLongClick()
+        }
+      ),
     shape = RoundedCornerShape(32.dp),
-    colors = ButtonDefaults.buttonColors(
-      containerColor = MaterialTheme.colorScheme.primary
-    )
+    color = MaterialTheme.colorScheme.primary
   ) {
-    Text(
-      text = text,
-      fontSize = 20.sp,
-      fontWeight = FontWeight.Black,
-      letterSpacing = 2.sp,
-      color = Color.White
-    )
+    Box(
+      contentAlignment = Alignment.Center
+    ) {
+      Text(
+        text = text,
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Black,
+        letterSpacing = 2.sp,
+        color = MaterialTheme.colorScheme.onPrimary
+      )
+    }
   }
 }
