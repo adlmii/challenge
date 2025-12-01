@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ap.mobile.challenge.ui.components.*
 import ap.mobile.challenge.ui.theme.ChallengeTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +58,7 @@ fun GameScreen(vm: GameViewModel) {
 
   // ========== UI State ==========
   val listState = rememberLazyListState()
+  val coroutineScope = rememberCoroutineScope()
   var isHistoryExpanded by remember { mutableStateOf(false) }
 
   // ========== Delete Dialog ==========
@@ -118,9 +121,15 @@ fun GameScreen(vm: GameViewModel) {
       // Item 5: Bagian History
       HistorySection(
         histories = histories,
-        isExpanded = isHistoryExpanded, // Pass state
+        isExpanded = isHistoryExpanded,
         onToggle = { isHistoryExpanded = !isHistoryExpanded },
-        onRefresh = { vm.loadHistory() },
+        onRefresh = {
+          vm.loadHistory()
+          coroutineScope.launch {
+            isHistoryExpanded = true
+            listState.animateScrollToItem(4)
+          }
+        },
         onDeleteItem = { vm.showDeleteConfirmation(it) }
       )
 
