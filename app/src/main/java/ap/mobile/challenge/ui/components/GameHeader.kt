@@ -4,6 +4,9 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Diamond
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -80,20 +83,29 @@ fun GameHeader() {
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "💎",
-                        fontSize = 18.sp
+                    // GANTI: Emoji 💎 -> Icon Diamond
+                    Icon(
+                        imageVector = Icons.Rounded.Diamond,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.size(20.dp)
                     )
+
                     Spacer(Modifier.width(8.dp))
+
                     Text(
                         text = "Match 3 to WIN Big!",
                         style = CustomTypography.gameTagline,
                         color = MaterialTheme.colorScheme.onBackground
                     )
+
                     Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = "💎",
-                        fontSize = 18.sp
+
+                    Icon(
+                        imageVector = Icons.Rounded.Diamond,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }

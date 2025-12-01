@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Casino
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -128,11 +130,15 @@ private fun EmptyHistoryState() {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "🎰",
-                fontSize = 64.sp
+            Icon(
+                imageVector = Icons.Rounded.Casino,
+                contentDescription = "Empty History",
+                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                modifier = Modifier.size(80.dp)
             )
+
             Spacer(Modifier.height(16.dp))
+
             Text(
                 text = "No History Yet",
                 fontSize = 18.sp,

@@ -4,8 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material.icons.rounded.SentimentVeryDissatisfied
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -139,7 +143,8 @@ private fun VerticalDivider() {
 private fun ResultCard(isWin: Boolean) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+        ,
         colors = CardDefaults.cardColors(
             containerColor = if (isWin)
                 WinGreen.copy(alpha = 0.15f)
@@ -154,11 +159,15 @@ private fun ResultCard(isWin: Boolean) {
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = if (isWin) "🎉" else "💫",
-                fontSize = 40.sp
+            Icon(
+                imageVector = if (isWin) Icons.Rounded.EmojiEvents else Icons.Rounded.SentimentVeryDissatisfied,
+                contentDescription = if (isWin) "Win" else "Lose",
+                tint = if (isWin) WinGreen else LoseRed,
+                modifier = Modifier.size(48.dp)
             )
+
             Spacer(Modifier.height(8.dp))
+
             Text(
                 text = if (isWin) "JACKPOT!" else "TRY AGAIN",
                 fontSize = 24.sp,
